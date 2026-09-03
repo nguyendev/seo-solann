@@ -1,0 +1,12 @@
+{
+  "name": "seo-solann",
+  "version": "1.0.0",
+  "description": "Google Ads Keyword Research, Search Volume Trends, Topic Clusters, Competitor Keyword Discovery, and Alphabet Soup Long-tail Expansion for Claude.",
+  "author": {
+    "name": "SolannEco",
+    "url": "https://solanneco.com"
+  },
+  "homepage": "https://github.com/nguyendev/seo-solann",
+  "repository": "https://github.com/nguyendev/seo-solann.git",
+  "license": "MIT"
+}

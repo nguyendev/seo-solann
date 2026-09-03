@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "seo-solann": {
+      "command": "python",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp_stdio.py"],
+      "env": {
+        "SOLANN_API_KEY": "${SOLANN_API_KEY}"
+      }
+    }
+  }
+}

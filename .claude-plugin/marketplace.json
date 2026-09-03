@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "seo-solann-marketplace",
+  "description": "SolannEco SEO Tools Marketplace for Claude",
+  "owner": {
+    "name": "nguyendev",
+    "email": "contact@solanneco.com"
+  },
+  "plugins": [
+    {
+      "name": "seo-solann",
+      "description": "Google Ads Keyword Research, Search Volume Trends, Topic Clusters, Competitor Keyword Discovery, and Alphabet Soup Long-tail Expansion for Claude.",
+      "author": {
+        "name": "SolannEco",
+        "email": "contact@solanneco.com"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/nguyendev/seo-solann"
+    }
+  ]
+}
