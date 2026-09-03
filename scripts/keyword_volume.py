@@ -53,7 +53,7 @@ def load_config():
 
     if config_path:
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, "r", encoding="utf-8-sig") as f:
                 file_config = json.load(f)
                 config.update(file_config)
         except Exception as e:

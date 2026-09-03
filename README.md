@@ -33,7 +33,7 @@
 
 ### Bước 1: Clone mã nguồn về máy
 ```bash
-git clone https://github.com/solann-eco/seo-solann.git
+git clone https://github.com/nguyendev/seo-solann.git
 cd seo-solann
 ```
 
