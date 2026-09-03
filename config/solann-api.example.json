@@ -1,0 +1,6 @@
+{
+  "api_key": "YOUR_API_KEY_HERE",
+  "base_url": "https://api.solann.io/api/v1",
+  "default_location": "VN",
+  "default_language": "vi"
+}

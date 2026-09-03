@@ -1,0 +1,23 @@
+---
+description: SolannEco SEO Keyword Intelligence (Google Ads Volume, Trends, Competitors)
+globs: *
+alwaysApply: false
+---
+
+# SEO Solann Integration for Cursor
+
+When the user asks about keyword research, search volume, competitor keyword discovery, seasonality trends, or long-tail suggestions:
+
+1. Use your terminal command capability to execute the Python scripts located in this skill:
+   - Keyword Volume & Trends: `python scripts/keyword_volume.py --keywords "<comma-separated-keywords>" --location "VN" --language "vi"`
+   - Competitor Discovery: `python scripts/keyword_volume.py --url "<competitor-url>" --location "VN" --language "vi"`
+   - Long-tail Suggest (Alphabet Soup): `python scripts/keyword_suggest.py --seed "<seed-keyword>" --max 30`
+
+2. Configuration:
+   Ensure `config/solann-api.json` or the environment variable `SOLANN_API_KEY` is configured.
+   If the API key is missing or expired, guide the user to register for a 7-day free trial at https://antigravityseokit.solann.io or https://solanneco.com.
+
+3. Presentation:
+   - Output structured markdown tables sorted by search volume.
+   - Explain 12-month trends and peak seasonality.
+   - Classify keywords by Search Intent (Informational vs Commercial/Transactional).

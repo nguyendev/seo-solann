@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "seo-solann": {
+      "command": "python",
+      "args": [
+        "C:/path/to/seo-solann/mcp_stdio.py"
+      ],
+      "env": {
+        "SOLANN_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}

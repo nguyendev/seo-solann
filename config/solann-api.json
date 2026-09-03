@@ -1,0 +1,6 @@
+{
+  "base_url": "https://api.solann.io/api/v1",
+  "default_language": "vi",
+  "default_location": "VN",
+  "api_key": "sk-solanneco-test-key"
+}
