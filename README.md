@@ -135,9 +135,23 @@ File `%APPDATA%\Claude\claude_desktop_config.json` (Windows) hoặc `~/Library/A
 ```
 Khởi động lại Claude Desktop, bạn sẽ thấy biểu tượng 2 Tools sẵn sàng: `google_keyword_research` và `auto_suggest_and_fetch_volume`.
 
-> ⚠️ **Lưu Ý Sống Còn Để Tránh Lỗi Mạng (Network Egress Error)**:
+> ⚠️ **Lưu Ý Sống Còn Để Tránh Lỗi Mạng (Network Egress / Host not in allowlist)**:
+> 
+> Nếu bạn chạy script trong môi trường sandbox của Claude (đường dẫn `/mnt/...`) và gặp thông báo:
+> `Host not in allowlist: api.solann.io. Add this host to your network egress settings to allow access.`
+> 
+> Hãy xử lý theo 1 trong 2 cách sau:
+> 
+> **Cách 1: Thêm `api.solann.io` vào danh sách cho phép của Claude (Để chạy được lệnh trong `/mnt/...')**:
+> 1. Trong Claude Desktop, vào **Settings** (Cài đặt).
+> 2. Chọn mục **Capabilities** (hoặc **Khả năng / Code Execution**).
+> 3. Tại phần **Network Egress** (hoặc **Domain allowlist**):
+>    - Bật **Allow network egress** (nếu đang tắt).
+>    - Thêm tên miền: **`api.solann.io`** vào danh sách **Allowed Domains** (Danh sách cho phép).
+> 
+> **Cách 2 (Khuyên dùng ⭐): Sử dụng qua MCP Server (Không bị giới hạn Sandbox)**:
 > 1. **Bắt buộc thoát hoàn toàn Claude Desktop**: Sau khi chạy lệnh cài đặt, bạn **phải Quit Claude Desktop từ khay hệ thống Taskbar** (chuột phải vào icon Claude cạnh đồng hồ Windows -> chọn **Quit**), rồi mở lại. Nếu chỉ tắt cửa sổ bằng dấu `X`, Claude vẫn chạy ngầm và **chưa nạp cấu hình MCP mới**.
-> 2. **Tránh lỗi "Không được phép kết nối tới api.solann.io"**: Nếu Claude chưa nạp được MCP tool, Claude sẽ tự động viết code Python và chạy trong môi trường ảo Sandbox (Cowork) của nó. Môi trường này bị Anthropic khóa toàn bộ kết nối mạng ra ngoài (network egress blocked) nên sẽ báo lỗi kết nối. Khi MCP đã được nạp đúng, Claude sẽ gọi công cụ MCP chạy trực tiếp trên máy của bạn (có internet 100%).
+> 2. Khi MCP đã được nạp đúng qua `claude_desktop_config.json`, Claude sẽ gọi công cụ MCP chạy trực tiếp trên máy thật của bạn (có internet 100%) mà không bị bất kỳ proxy hay sandbox nào chặn.
 > 3. **Dấu hiệu nhận biết cài đặt thành công**: Trong ô chat Claude Desktop, góc dưới có biểu tượng **Chiếc búa (Tools)** hiển thị 2 tool: `google_keyword_research` và `auto_suggest_and_fetch_volume`. Khi bạn hỏi, Claude sẽ hiển thị trạng thái *"Using tool..."* thay vì *"Running code..."*.
 
 ---
