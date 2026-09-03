@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 # SolannEco SEO Kit - 1-Click Installer (Windows PowerShell)
 # Ho tro tu dong thiet lap cho: Antigravity 2, Cursor IDE, Claude Desktop
 # ==============================================================================
@@ -145,6 +145,6 @@ Write-Host "==========================================================" -Foregro
 Write-Host "Da ho tro: $($InstalledTargets -join ', ')" -ForegroundColor White
 if ([string]::IsNullOrWhiteSpace($ApiKey)) {
     Write-Host "Luu y: Dung quen cap nhat API Key trong file config/solann-api.json" -ForegroundColor Yellow
-    Write-Host "Dang ky nhan 7 ngay dung thu mien phi tai https://antigravityseokit.solann.io" -ForegroundColor Yellow
+    Write-Host "Dang ky nhan 7 ngay dung thu mien phi tai https://solanneco.com" -ForegroundColor Yellow
 }
 Write-Host ""

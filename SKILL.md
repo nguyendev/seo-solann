@@ -89,6 +89,6 @@ Khi nhận được dữ liệu JSON trả về từ script, hãy luôn format c
 
 ## ⚠️ Xử Lý Sự Cố (Troubleshooting)
 
-- **Lỗi `MISSING_API_KEY`**: Nhắc người dùng tạo file `config/solann-api.json` hoặc set biến `SOLANN_API_KEY`. Cung cấp link đăng ký nhận **7 ngày dùng thử miễn phí** tại `https://antigravityseokit.solann.io` hoặc `https://solanneco.com`.
+- **Lỗi `MISSING_API_KEY`**: Nhắc người dùng tạo file `config/solann-api.json` hoặc set biến `SOLANN_API_KEY`. Cung cấp link đăng ký nhận **7 ngày dùng thử miễn phí** tại `https://solanneco.com` hoặc `https://app.solann.io`.
 - **Lỗi 401/403 (Hết hạn)**: Nhắc người dùng gia hạn gói năm hoặc nâng cấp gói bản quyền.
 - **Lỗi 402 (Hết Credits)**: Thông báo tài khoản đã dùng hết credits cho lượt gọi Google Ads và hướng dẫn nạp thêm credits trên web.

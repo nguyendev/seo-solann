@@ -40,7 +40,7 @@ def make_api_request(endpoint_path, payload, config):
     if not api_key or api_key == "YOUR_API_KEY_HERE":
         return {
             "error": "MISSING_API_KEY",
-            "message": "Chưa cấu hình API Key. Đăng ký tài khoản tại https://antigravityseokit.solann.io để nhận 7 ngày dùng thử miễn phí.",
+            "message": "Chưa cấu hình API Key. Đăng ký tài khoản tại https://solanneco.com hoặc https://app.solann.io để nhận 7 ngày dùng thử miễn phí.",
             "guide": "Vui lòng cập nhật file config/solann-api.json hoặc biến môi trường SOLANN_API_KEY."
         }
 
@@ -60,7 +60,7 @@ def make_api_request(endpoint_path, payload, config):
 
         hint = "Vui lòng kiểm tra lại yêu cầu."
         if e.code in (401, 403):
-            hint = "API Key không hợp lệ hoặc đã hết hạn dùng thử 7 ngày. Hãy gia hạn gói thuê bao năm tại https://antigravityseokit.solann.io."
+            hint = "API Key không hợp lệ hoặc đã hết hạn dùng thử 7 ngày. Hãy gia hạn gói thuê bao năm tại https://solanneco.com."
         elif e.code == 402:
             hint = "Tài khoản đã hết Credits cho lượt tra cứu Google Ads này. Vui lòng nạp thêm Credits trên web SolannEco."
 

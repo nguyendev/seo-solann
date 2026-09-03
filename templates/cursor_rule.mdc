@@ -15,7 +15,7 @@ When the user asks about keyword research, search volume, competitor keyword dis
 
 2. Configuration:
    Ensure `config/solann-api.json` or the environment variable `SOLANN_API_KEY` is configured.
-   If the API key is missing or expired, guide the user to register for a 7-day free trial at https://antigravityseokit.solann.io or https://solanneco.com.
+   If the API key is missing or expired, guide the user to register for a 7-day free trial at https://solanneco.com or https://app.solann.io.
 
 3. Presentation:
    - Output structured markdown tables sorted by search volume.

@@ -84,5 +84,8 @@ echo ""
 echo "=========================================================="
 echo "                Cài Đặt Hoàn Tất Thành Công!              "
 echo "=========================================================="
-echo "Đăng ký nhận 7 ngày dùng thử miễn phí tại https://antigravityseokit.solann.io"
+if [ -z "$API_KEY" ]; then
+    echo -e "\033[1;33mLưu ý: Đừng quên cập nhật API Key trong file config/solann-api.json\033[0m"
+fi
+echo "Đăng ký nhận 7 ngày dùng thử miễn phí tại https://solanneco.com hoặc https://app.solann.io"
 echo ""

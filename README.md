@@ -23,9 +23,11 @@
 
 ## 💎 Chính Sách Sử Dụng & Bản Quyền
 
-- 🎁 **Dùng thử 7 ngày miễn phí (7-Day Free Trial)**: Tất cả tài khoản mới đăng ký tại [antigravityseokit.solann.io](https://antigravityseokit.solann.io) hoặc [solanneco.com](https://solanneco.com) đều được kích hoạt 7 ngày trải nghiệm không giới hạn tính năng cơ bản.
-- 📅 **Gói Thuê Bao Năm (Yearly Subscription)**: Duy trì kết nối ổn định 24/7 với hệ sinh thái SolannEco API / MCP cho doanh nghiệp và chuyên gia SEO.
-- 🪙 **Hệ Thống Credits Linh Hoạt**: Riêng một số tính năng tra cứu chuyên sâu tiêu tốn tài nguyên lớn (như batch volume quy mô lớn, cào đối thủ sâu) sẽ được tính theo số dư Credits của tài khoản.
+- 🎁 **Dùng thử 7 ngày miễn phí (7-Day Free Trial)**: Tất cả tài khoản mới đăng ký tại [solanneco.com](https://solanneco.com) hoặc [app.solann.io](https://app.solann.io) đều được kích hoạt 7 ngày trải nghiệm toàn bộ tính năng lưu trữ dữ liệu và kết nối AI.
+- 📅 **Gói Thuê Bao Năm (Yearly Subscription)**: Gói nền tảng kích hoạt **SolannEco API Key** (`sk-solanneco-...`) với mục đích cốt lõi là **Lưu trữ & Quản lý Dữ liệu SEO** trên hệ thống (quản lý backlink của domain, lưu trữ kết quả check index, lưu trữ & truy xuất lịch sử ranking từ khóa) và kết nối AI IDEs.
+- 🪙 **Ví Credits Bổ Sung (Pay-as-you-go)**: Dành riêng cho các tính năng tiêu tốn tài nguyên bên thứ ba (như tra cứu Google Ads Keyword Planner khối lượng lớn vượt hạn ngạch).
+
+> ⚠️ **Lưu ý quan trọng**: SolannEco API Key của `seo-solann` (dạng `sk-solanneco-...`, đăng ký tại `solanneco.com` hoặc `app.solann.io`) **hoàn toàn khác** với License Key của bộ công cụ CLI Antigravity SeoKit (dạng `SK-XXXX-XXXX-XXXX`, bán tại `antigravityseokit.solann.io`).
 
 ---
 
