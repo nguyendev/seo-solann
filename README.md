@@ -135,6 +135,11 @@ File `%APPDATA%\Claude\claude_desktop_config.json` (Windows) hoặc `~/Library/A
 ```
 Khởi động lại Claude Desktop, bạn sẽ thấy biểu tượng 2 Tools sẵn sàng: `google_keyword_research` và `auto_suggest_and_fetch_volume`.
 
+> ⚠️ **Lưu Ý Sống Còn Để Tránh Lỗi Mạng (Network Egress Error)**:
+> 1. **Bắt buộc thoát hoàn toàn Claude Desktop**: Sau khi chạy lệnh cài đặt, bạn **phải Quit Claude Desktop từ khay hệ thống Taskbar** (chuột phải vào icon Claude cạnh đồng hồ Windows -> chọn **Quit**), rồi mở lại. Nếu chỉ tắt cửa sổ bằng dấu `X`, Claude vẫn chạy ngầm và **chưa nạp cấu hình MCP mới**.
+> 2. **Tránh lỗi "Không được phép kết nối tới api.solann.io"**: Nếu Claude chưa nạp được MCP tool, Claude sẽ tự động viết code Python và chạy trong môi trường ảo Sandbox (Cowork) của nó. Môi trường này bị Anthropic khóa toàn bộ kết nối mạng ra ngoài (network egress blocked) nên sẽ báo lỗi kết nối. Khi MCP đã được nạp đúng, Claude sẽ gọi công cụ MCP chạy trực tiếp trên máy của bạn (có internet 100%).
+> 3. **Dấu hiệu nhận biết cài đặt thành công**: Trong ô chat Claude Desktop, góc dưới có biểu tượng **Chiếc búa (Tools)** hiển thị 2 tool: `google_keyword_research` và `auto_suggest_and_fetch_volume`. Khi bạn hỏi, Claude sẽ hiển thị trạng thái *"Using tool..."* thay vì *"Running code..."*.
+
 ---
 
 ## 💬 Mẫu Câu Lệnh Trò Chuyện Với AI

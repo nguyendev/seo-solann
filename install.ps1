@@ -108,7 +108,7 @@ if ($Target -in @("Auto", "Claude", "All")) {
         $ClaudeKey = if ($ApiKey) { $ApiKey } else { "YOUR_API_KEY_HERE" }
 
         python -c @"
-import json, os
+import json, os, sys
 cfg_path = r'$ClaudeConfigPath'
 data = {}
 if os.path.exists(cfg_path):
@@ -122,8 +122,9 @@ if not isinstance(data, dict):
 if 'mcpServers' not in data or not isinstance(data['mcpServers'], dict):
     data['mcpServers'] = {}
 
+real_python = sys.executable.replace('\\', '/')
 data['mcpServers']['seo-solann'] = {
-    'command': 'python',
+    'command': real_python,
     'args': [r'$McpScriptPath'],
     'env': {
         'SOLANN_API_KEY': '$ClaudeKey'
@@ -134,6 +135,12 @@ with open(cfg_path, 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
 "@
         Write-Host "[OK] Da cap nhat cau hinh Claude Desktop tai: $ClaudeConfigPath" -ForegroundColor Green
+        
+        $ClaudeProc = Get-Process -Name "Claude" -ErrorAction SilentlyContinue
+        if ($ClaudeProc) {
+            Write-Host "[QUAN TRONG] Phat hien Claude Desktop dang chay!" -ForegroundColor Yellow
+            Write-Host "  -> Ban phai thoat hoan toan Claude (chuot phai icon Claude o khay Taskbar -> Quit) roi mo lai de nap Tools MCP!" -ForegroundColor Yellow
+        }
         $InstalledTargets += "Claude Desktop"
     }
 }
