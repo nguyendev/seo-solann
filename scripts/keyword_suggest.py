@@ -41,9 +41,20 @@ def resolve_config_path():
 
 def load_config():
     config_path = resolve_config_path()
+    raw_env_key = (
+        os.environ.get("SOLANN_API_KEY")
+        or os.environ.get("CLAUDE_PLUGIN_OPTION_SOLANN_API_KEY")
+        or os.environ.get("CLAUDE_PLUGIN_OPTION_API_KEY")
+        or ""
+    ).strip()
+
+    # Ignore literal unexpanded template placeholders
+    if raw_env_key.startswith("${") and raw_env_key.endswith("}"):
+        raw_env_key = ""
+
     config = {
         "base_url": os.environ.get("SOLANN_BASE_URL", "https://api.solann.io/api/v1"),
-        "api_key": os.environ.get("SOLANN_API_KEY", ""),
+        "api_key": raw_env_key,
         "default_location": "VN",
         "default_language": "vi"
     }
@@ -52,7 +63,13 @@ def load_config():
         try:
             with open(config_path, "r", encoding="utf-8-sig") as f:
                 file_config = json.load(f)
+                file_key = file_config.get("api_key", "").strip()
                 config.update(file_config)
+                # Keep env key if valid, else keep file key
+                if raw_env_key:
+                    config["api_key"] = raw_env_key
+                elif file_key and file_key != "YOUR_API_KEY_HERE":
+                    config["api_key"] = file_key
         except Exception as e:
             sys.stderr.write(f"[WARNING] Could not parse config at {config_path}: {e}\n")
 

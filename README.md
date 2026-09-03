@@ -52,19 +52,70 @@ chmod +x install.sh
 
 ---
 
+## 🔑 Hướng Dẫn Cấu Hình `SOLANN_API_KEY`
+
+Hệ thống hỗ trợ 3 cách cung cấp API Key linh hoạt (ưu tiên theo thứ tự từ trên xuống dưới):
+
+1. **Biến môi trường (Khuyến nghị cho Claude Code & Server)**:
+   - **Windows PowerShell**:
+     ```powershell
+     [System.Environment]::SetEnvironmentVariable('SOLANN_API_KEY', 'sk-solanneco-your-key', 'User')
+     ```
+   - **macOS / Linux**:
+     ```bash
+     echo 'export SOLANN_API_KEY="sk-solanneco-your-key"' >> ~/.bashrc && source ~/.bashrc
+     ```
+2. **File cấu hình `config/solann-api.json`**:
+   - Chạy `install.ps1 -ApiKey "sk-solanneco-..."` hoặc sửa trực tiếp file `config/solann-api.json`:
+     ```json
+     {
+       "api_key": "sk-solanneco-your-key",
+       "base_url": "https://api.solann.io/api/v1",
+       "default_location": "VN",
+       "default_language": "vi"
+     }
+     ```
+3. **Thư mục cấu hình toàn cục**: `~/.solann/config.json`.
+
+---
+
 ## 🚀 Hướng Dẫn Tích Hợp Chi Tiết Từng Nền Tảng
 
 ### 1. Antigravity 2 (Đề xuất ⭐)
-- Chạy script `install.ps1` (hoặc copy cả thư mục này vào `.agents/skills/seo-solann` trong dự án hoặc thư mục toàn cục `~/.gemini/config/skills/seo-solann`).
-- Đảm bảo file `config/solann-api.json` đã có API Key của bạn.
+- Chạy script cài đặt:
+  ```powershell
+  .\install.ps1 -ApiKey "sk-solanneco-your-api-key"
+  ```
+- Trình cài đặt tự động nạp Skill vào `.agents/skills/seo-solann/` (hoặc thư mục toàn cục `~/.gemini/config/skills/seo-solann/`) và cập nhật API Key vào `config/solann-api.json`.
 - AI sẽ tự động đọc `SKILL.md` và kích hoạt tra cứu mỗi khi bạn hỏi về SEO/Từ khóa.
 
 ### 2. Cursor IDE
-- Chạy script `install.ps1` sẽ tự động tạo file rule tại `.cursor/rules/seo-solann.mdc`.
+- Chạy script `.\install.ps1 -ApiKey "sk-solanneco-..."` sẽ tự động tạo file rule tại `.cursor/rules/seo-solann.mdc` và lưu key vào `config/solann-api.json`.
 - Khi bạn chat với Cursor Composer / Agent, chỉ cần gõ yêu cầu nghiên cứu từ khóa, Cursor Agent sẽ tự động chạy script Python để lấy dữ liệu.
 
-### 3. Claude Desktop
-Script cài đặt sẽ tự động cập nhật file `claude_desktop_config.json` của bạn:
+### 3. Claude Desktop & Claude Code
+
+#### 🔹 Cách A: Dùng Claude Plugin Marketplace (Mới nhất)
+1. Trong Claude, chọn **Add marketplace** (hoặc gõ `/plugin marketplace add https://github.com/nguyendev/seo-solann`).
+2. Dán URL: `https://github.com/nguyendev/seo-solann` và nhấn **Sync**.
+3. **Cách nhập API Key**:
+   - Thiết lập biến môi trường `SOLANN_API_KEY` (xem mục [🔑 Cấu Hình SOLANN_API_KEY](#-hướng-dẫn-cấu-hình-solann_api_key) ở trên).
+   - Hoặc thêm vào file `~/.claude/settings.json`:
+     ```json
+     {
+       "env": {
+         "SOLANN_API_KEY": "sk-solanneco-your-api-key"
+       }
+     }
+     ```
+   - Hoặc điền vào file `config/solann-api.json` ngay trong thư mục repository.
+
+#### 🔹 Cách B: Cài đặt Local MCP cho Claude Desktop (Truyền thống)
+Chạy script cài đặt để tự động cấu hình:
+```powershell
+.\install.ps1 -ApiKey "sk-solanneco-your-api-key" -Target "Claude"
+```
+File `%APPDATA%\Claude\claude_desktop_config.json` (Windows) hoặc `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) sẽ được tự động cập nhật:
 ```json
 {
   "mcpServers": {
@@ -74,7 +125,7 @@ Script cài đặt sẽ tự động cập nhật file `claude_desktop_config.js
         "C:/path/to/seo-solann/mcp_stdio.py"
       ],
       "env": {
-        "SOLANN_API_KEY": "sk-solanneco-..."
+        "SOLANN_API_KEY": "sk-solanneco-your-api-key"
       }
     }
   }

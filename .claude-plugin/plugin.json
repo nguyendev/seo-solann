@@ -8,5 +8,13 @@
   },
   "homepage": "https://github.com/nguyendev/seo-solann",
   "repository": "https://github.com/nguyendev/seo-solann.git",
-  "license": "MIT"
+  "license": "MIT",
+  "userConfig": {
+    "solann_api_key": {
+      "title": "SolannEco API Key",
+      "description": "API Key của bạn từ SolannEco (sk-solanneco-...)",
+      "sensitive": true,
+      "type": "string"
+    }
+  }
 }
