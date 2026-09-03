@@ -113,7 +113,9 @@ def fetch_keyword_suggestions(config, seed_keyword, location=None, language=None
             parsed_err = {"raw": error_msg}
 
         hint = "Vui lòng kiểm tra lại yêu cầu."
-        if e.code in (401, 403):
+        if "Host not in allowlist" in error_msg or "network egress" in error_msg.lower():
+            hint = "Môi trường sandbox của Claude đang chặn kết nối mạng tới api.solann.io. Vui lòng vào Claude Settings -> Capabilities -> Bật 'Allow network egress' và thêm 'api.solann.io' vào Domain allowlist."
+        elif e.code in (401, 403):
             hint = "API Key không hợp lệ hoặc đã hết hạn dùng thử 7 ngày. Hãy gia hạn gói thuê bao năm tại https://solanneco.com."
         elif e.code == 402:
             hint = "Tài khoản đã hết Credits cho lượt mở rộng từ khóa này. Vui lòng nạp thêm Credits trên web SolannEco."
