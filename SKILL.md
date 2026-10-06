@@ -1,94 +1,57 @@
 ---
 name: seo-solann
-description: Tra cứu dữ liệu từ khóa Google Ads chính xác (Search volume, 12-month trends, topic clusters, competitor keywords, long-tail expansion). Kết nối qua SolannEco API.
-when_to_use: "Khi người dùng yêu cầu nghiên cứu từ khóa, kiểm tra lượng tìm kiếm (search volume), phân tích tính mùa vụ, phân tích từ khóa đối thủ qua URL, hoặc mở rộng bộ từ khóa đuôi dài (long-tail keywords)."
-allowed-tools: run_command
+description: >-
+  In-house SolannEco SEO data provider and automation engine. Queries Google Ads search volume,
+  12-month trends, topic clusters, competitor keywords, and long-tail autocomplete expansions,
+  performs bulk Google index verification (Serper BYOK) with Cloud sync, and triggers 1-Click
+  Force Indexing. Use this skill when the user asks for keyword research, search volume, competitor
+  keyword discovery, long-tail expansion, bulk Google index check, or force indexing.
 ---
 
-# SEO Solann — Keyword Intelligence & Research
+# SEO Solann — Keyword Intelligence & Index Management
 
-Kỹ năng này kết nối trực tiếp với dịch vụ dữ liệu SEO cao cấp của **SolannEco**, cung cấp số liệu tìm kiếm chuẩn xác trực tiếp từ **Google Ads Keyword Planner API** và **Google Autocomplete**.
+Cổng dữ liệu SEO độc quyền của **SolannEco**, cung cấp dữ liệu Google Ads chuẩn xác trực tiếp từ Keyword Planner API, kiểm tra Google Index hàng loạt kèm cơ chế lưu trữ Cloud, và kích hoạt Ép Index 1-Click.
 
----
-
-## 🎯 Khi Nào Kích Hoạt Kỹ Năng Này?
-
-Kích hoạt kỹ năng này khi người dùng có các nhu cầu:
-1. **Nghiên cứu từ khóa (Keyword Research)**: Tìm kiếm lượng volume, CPC, độ cạnh tranh của một hoặc nhiều từ khóa.
-2. **Phân tích đối thủ (Competitor Keyword Discovery)**: Người dùng cung cấp URL website của đối thủ và muốn biết đối thủ đang nhắm vào những từ khóa nào.
-3. **Mở rộng từ khóa đuôi dài (Long-Tail Expansion)**: Muốn mở rộng từ một từ khóa hạt giống (seed keyword) ra hàng chục góc nhìn ngách thông qua kỹ thuật Alphabet Soup.
-4. **Phân tích tính mùa vụ (Seasonality Analysis)**: Cần xem biểu đồ biến động tìm kiếm trong 12 tháng qua để lên lịch đăng bài đón đầu xu hướng.
-5. **Gom cụm chủ đề (Topic Clustering)**: Phân nhóm từ khóa theo ngữ nghĩa tự nhiên.
+> **Nguyên tắc Kiến trúc:** Mọi xử lý thuật toán, cào dữ liệu, đối soát URL và gọi API được đóng gói hoàn toàn trong các tệp Python độc lập tại thư mục `scripts/`. Tài liệu chuyên sâu được phân tách tại `references/` theo cơ chế Progressive Disclosure để tối ưu hóa context window.
 
 ---
 
-## 🛠️ Bộ Công Cụ Scripts
+## 🛠️ Bộ Công Cụ Scripts Thực Thi (`scripts/`)
 
-Kỹ năng cung cấp 2 script CLI viết bằng Python thuần (không cần cài thêm thư viện):
+Các script viết bằng **100% Python Standard Library** (Zero Dependencies, không cần `pip install`), chạy trực tiếp qua `run_command`:
 
-### 1. `scripts/keyword_volume.py` — Tra Cứu Volume & Cào Đối Thủ
-Sử dụng khi đã có danh sách từ khóa hoặc có URL đối thủ.
+| Script | Nghiệp Vụ Cốt Lõi | Lệnh Thực Thi Mẫu |
+|---|---|---|
+| [`keyword_volume.py`](./scripts/keyword_volume.py) | Tra cứu Volume, CPC, Trend 12 tháng, Cào từ khóa đối thủ | `python scripts/keyword_volume.py --keywords "từ khóa" --location "VN"` |
+| [`keyword_suggest.py`](./scripts/keyword_suggest.py) | Vét từ khóa đuôi dài Alphabet Soup (a→j) + Enrich Volume | `python scripts/keyword_suggest.py --seed "từ khóa gốc" --max 50` |
+| [`check_index.py`](./scripts/check_index.py) | Quét Google Index hàng loạt (Serper BYOK) & Lưu Cloud | `python scripts/check_index.py --file links.txt --save-session --scope 1` |
+| [`force_index.py`](./scripts/force_index.py) | Kích hoạt Ép Index 1-Click (120 credit/URL, tự hoàn tiền) | `python scripts/force_index.py --urls "url1,url2" --dry-run` |
 
-```bash
-# Tra cứu volume cho danh sách từ khóa (cách nhau bởi dấu phẩy)
-python scripts/keyword_volume.py --keywords "mua nhà hà nội, bán đất đông anh" --location "VN" --language "vi"
+---
 
-# Cào bộ từ khóa từ website đối thủ
-python scripts/keyword_volume.py --url "https://tiki.vn" --location "VN" --language "vi"
+## 📖 Tài Liệu Tham Chiếu Chuyên Sâu (`references/`)
 
-# Kết hợp cả hai (Hybrid Seed)
-python scripts/keyword_volume.py --url "https://shopee.vn" --keywords "tai nghe bluetooth"
+Đọc các tài liệu tham chiếu chi tiết khi thực hiện quy trình nghiệp vụ tương ứng:
+
+1. **[Nghiên Cứu Từ Khóa & Cào Đối Thủ](./references/keyword-research.md)**: Hướng dẫn chi tiết về cấu trúc dữ liệu trả về, cào URL landing page đối thủ và kỹ thuật vét Alphabet Soup.
+2. **[Kiểm Tra Google Index & Lưu Trữ Đám Mây](./references/index-management.md)**: Thuật toán đối soát URLCleaner 5 tầng, phân loại Scope (`Internal`, `Backlink`, `Social`, `Standalone`), gắn Dự án và Tags.
+3. **[Ép Index 1-Click & Quản Lý Credit](./references/force-indexing.md)**: Quy trình 4 bước khép kín từ kiểm tra index đến ép index, chính sách trừ điểm và cơ chế Auto-Refund khi lỗi đối tác.
+4. **[Tích Hợp Máy Chủ MCP Stdio](./references/mcp-integration.md)**: Hướng dẫn kết nối `mcp_stdio.py` cho Claude Desktop, Cursor IDE theo triết lý Anti-Tool-Bloat.
+
+---
+
+## ⚙️ Cấu Hình Nhanh
+
+Cấu hình API Key tại `config/solann-api.json` hoặc biến môi trường `SOLANN_API_KEY`:
+
+```json
+{
+  "api_key": "sk-solanneco-your-key-here",
+  "base_url": "https://api.solann.io/api/v1",
+  "default_location": "VN",
+  "default_language": "vi",
+  "serper_api_key": "your-serper-key-here"
+}
 ```
 
-**Tham số:**
-- `--keywords`: Danh sách từ khóa (ngăn cách bằng dấu phẩy).
-- `--url`: URL website/landing page đối thủ.
-- `--location`: Mã hoặc tên quốc gia (mặc định: `VN`, hỗ trợ `vietnam`, `US`, `japan`,...).
-- `--language`: Mã ngôn ngữ (mặc định: `vi`, hỗ trợ `en`, `tiếng việt`,...).
-
----
-
-### 2. `scripts/keyword_suggest.py` — Mở Rộng Từ Khóa Đuôi Dài (Alphabet Soup)
-Sử dụng khi người dùng đưa ra 1 từ khóa chung chung (short-tail) và cần tìm tất cả các biến thể tìm kiếm thực tế của người dùng.
-
-```bash
-# Mở rộng từ khóa gốc với chiến thuật Alphabet Soup (a→j) và tự động enrich Volume
-python scripts/keyword_suggest.py --seed "máy lọc nước" --max 30
-
-# Tắt Alphabet Soup (chỉ lấy autocomplete cơ bản)
-python scripts/keyword_suggest.py --seed "máy lọc nước" --no-alphabet-soup
-```
-
-**Tham số:**
-- `--seed`: Từ khóa hạt giống bắt buộc.
-- `--max`: Số lượng từ khóa tối đa cần lấy (1 - 100, mặc định: 50).
-- `--no-alphabet-soup`: Tắt mở rộng a→j nếu chỉ cần gợi ý cơ bản.
-
----
-
-## 📊 Hướng Dẫn Trình Bày Dữ Liệu Cho Người Dùng
-
-Khi nhận được dữ liệu JSON trả về từ script, hãy luôn format câu trả lời chuyên nghiệp theo cấu trúc:
-
-### 1. Bảng Tổng Hợp Từ Khóa (Sắp xếp theo Search Volume giảm dần)
-| Từ khóa | Volume/tháng | Cạnh tranh (0-100) | CPC ước tính (VNĐ) | Phân cụm chủ đề |
-|---|---|---|---|---|
-| `{keyword}` | `{avgMonthlySearches}` | `{competition}` (`{competitionIndex}`) | `{lowTopOfPageBidMicros/10^6}` - `{highTopOfPageBidMicros/10^6}` | `{topicClusters}` |
-
-### 2. Nhận Xét Xu Hướng & Tính Mùa Vụ (Seasonality Insights)
-- Dựa vào trường `monthlySearchVolumes` (mảng 12 tháng), hãy chỉ ra:
-  - Tháng có lượng tìm kiếm đạt đỉnh (Peak Month).
-  - Tháng có lượng tìm kiếm chạm đáy (Low Season).
-  - Xu hướng chung đang tăng trưởng (Trending Up) hay bão hòa/suy giảm.
-
-### 3. Đề Xuất Chiến Lược Nội Dung (Actionable Advice)
-- **Top Cơ Hội (Quick Wins)**: Những từ khóa có Volume khá, mức cạnh tranh `LOW` hoặc `competitionIndex < 30`.
-- **Phân nhóm Search Intent**: Phân loại rõ từ khóa nào là **Thông tin (Informational)** dùng viết bài blog, từ khóa nào là **Thương mại/Giao dịch (Commercial/Transactional)** dùng làm trang bán hàng/landing page.
-
----
-
-## ⚠️ Xử Lý Sự Cố (Troubleshooting)
-
-- **Lỗi `MISSING_API_KEY`**: Nhắc người dùng tạo file `config/solann-api.json` hoặc set biến `SOLANN_API_KEY`. Cung cấp link đăng ký nhận **7 ngày dùng thử miễn phí** tại `https://solanneco.com` hoặc `https://app.solann.io`.
-- **Lỗi 401/403 (Hết hạn)**: Nhắc người dùng gia hạn gói năm hoặc nâng cấp gói bản quyền.
-- **Lỗi 402 (Hết Credits)**: Thông báo tài khoản đã dùng hết credits cho lượt gọi Google Ads và hướng dẫn nạp thêm credits trên web.
+*Nếu thiếu API Key*: Báo người dùng đăng ký nhận 7 ngày dùng thử miễn phí tại [solanneco.com](https://solanneco.com) hoặc [app.solann.io](https://app.solann.io).

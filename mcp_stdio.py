@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-SolannEco SEO Kit — Lightweight Local MCP Stdio Server
-Enables Claude Desktop (or any stdio MCP client) to connect to SolannEco API
+SolannEco SEO Kit — Anti-Tool-Bloat Local MCP Stdio Server
+Enables Claude Desktop / Cursor / Antigravity to connect to SolannEco API
 Zero external dependencies (uses standard library only).
+
+Architecture Principle (Anti-Tool-Bloat):
+Exposes only generic gateway tools to prevent context window saturation.
+Heavy computational and bulk operations (e.g., checking hundreds of URLs via Serper,
+Alphabet Soup scraping) are delegated to the 'seo-solann' Skill using Python scripts.
 """
 
 import json
@@ -11,6 +16,7 @@ import os
 import sys
 import urllib.request
 import urllib.error
+import urllib.parse
 
 # Force UTF-8 encoding on stdin, stdout, stderr for Windows compatibility
 if sys.platform == "win32":
@@ -21,31 +27,36 @@ if sys.platform == "win32":
     if hasattr(sys.stdin, "reconfigure"):
         sys.stdin.reconfigure(encoding="utf-8")
 
-# Add current scripts directory to path to reuse functions if needed
+# Add current scripts directory to path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(SCRIPT_DIR, "scripts"))
 
 from keyword_volume import load_config as load_volume_config
 from keyword_volume import resolve_config_path
 
+
 def log_debug(msg):
     sys.stderr.write(f"[seo-solann-mcp] {msg}\n")
     sys.stderr.flush()
 
-def make_api_request(endpoint_path, payload, config):
+
+def make_api_request(endpoint_path, payload, config, method="POST"):
     base_url = config.get("base_url", "https://api.solann.io/api/v1").rstrip("/")
     endpoint = f"{base_url}/{endpoint_path.lstrip('/')}"
     api_key = config.get("api_key", "").strip()
 
-    if not api_key or api_key == "YOUR_API_KEY_HERE":
+    if not api_key or api_key in ("YOUR_API_KEY_HERE", "YOUR_SOLANN_API_KEY_HERE"):
         return {
             "error": "MISSING_API_KEY",
             "message": "Chưa cấu hình API Key. Đăng ký tài khoản tại https://solanneco.com hoặc https://app.solann.io để nhận 7 ngày dùng thử miễn phí.",
             "guide": "Vui lòng cập nhật file config/solann-api.json hoặc biến môi trường SOLANN_API_KEY."
         }
 
-    req = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"))
-    req.add_header("Content-Type", "application/json")
+    if method.upper() == "GET" or payload is None:
+        req = urllib.request.Request(endpoint, method="GET")
+    else:
+        req = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"), method=method.upper())
+        req.add_header("Content-Type", "application/json")
     req.add_header("X-API-Key", api_key)
 
     try:
@@ -64,7 +75,7 @@ def make_api_request(endpoint_path, payload, config):
         elif e.code in (401, 403):
             hint = "API Key không hợp lệ hoặc đã hết hạn dùng thử 7 ngày. Hãy gia hạn gói thuê bao năm tại https://solanneco.com."
         elif e.code == 402:
-            hint = "Tài khoản đã hết Credits cho lượt tra cứu Google Ads này. Vui lòng nạp thêm Credits trên web SolannEco."
+            hint = "Tài khoản đã hết Credits cho lượt gọi API này. Vui lòng nạp thêm Credits trên web SolannEco."
 
         return {
             "error": "API_REQUEST_FAILED",
@@ -75,103 +86,157 @@ def make_api_request(endpoint_path, payload, config):
     except Exception as e:
         return {"error": "NETWORK_ERROR", "message": str(e)}
 
+
 def get_tools_definition():
+    """Returns concise, anti-tool-bloat tool definitions."""
     return [
         {
-            "name": "google_keyword_research",
-            "description": "Tra cứu lượng tìm kiếm chuẩn Google Ads (Search Volume), biểu đồ xu hướng 12 tháng (Trends), CPC và phân cụm chủ đề (Topic Clusters) từ danh sách từ khóa hoặc cào từ website đối thủ.",
+            "name": "solann_api_request",
+            "description": "Cổng gửi yêu cầu chung đến mọi API của hệ sinh thái SolannEco (ví dụ: 'keyword-research', 'keyword-suggest', 'index-check-sessions', 'force-index'). Giúp AI linh hoạt kết nối dữ liệu mà không làm tràn context window với quá nhiều tool rời rạc. Với các tác vụ kiểm tra hàng loạt nặng (hàng trăm URLs qua Serper), hãy kích hoạt Skill 'seo-solann' để chạy script Python qua terminal.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "keywords": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Danh sách các từ khóa cần tra cứu (ví dụ: ['mua nhà', 'bán đất'])"
-                    },
-                    "targetUrl": {
+                    "endpoint": {
                         "type": "string",
-                        "description": "URL website đối thủ để hệ thống tự động cào và trích xuất bộ từ khóa của họ"
+                        "description": "Tên endpoint API (ví dụ: 'keyword-research', 'keyword-suggest', 'index-check-sessions', 'force-index')"
                     },
-                    "location": {
+                    "method": {
                         "type": "string",
-                        "description": "Mã hoặc tên quốc gia (mặc định: 'VN', hỗ trợ 'vietnam', 'US',...)"
+                        "enum": ["GET", "POST", "PUT", "DELETE"],
+                        "description": "Phương thức HTTP (mặc định 'POST')"
                     },
-                    "language": {
-                        "type": "string",
-                        "description": "Mã hoặc tên ngôn ngữ (mặc định: 'vi', hỗ trợ 'tiếng việt', 'en',...)"
+                    "payload": {
+                        "type": "object",
+                        "description": "Dữ liệu JSON gửi kèm trong body (đối với POST/PUT)"
+                    },
+                    "queryParams": {
+                        "type": "object",
+                        "description": "Các tham số query key-value nối vào URL"
                     }
-                }
+                },
+                "required": ["endpoint"]
             }
         },
         {
-            "name": "auto_suggest_and_fetch_volume",
-            "description": "Mở rộng từ khóa hạt giống thành hàng chục từ khóa đuôi dài (Google Autocomplete Alphabet Soup a-j) và tự động làm giàu số liệu Search Volume, CPC từ Google Ads.",
+            "name": "solann_get_project_data",
+            "description": "Truy vấn nhanh dữ liệu lưu trữ SEO trên Solann Cloud: Danh sách phiên kiểm tra Google Index, các URL chưa index (NotIndexed/Error) theo Dự án hoặc Tên miền để AI nắm bắt ngữ cảnh.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "seedKeyword": {
+                    "action": {
                         "type": "string",
-                        "description": "Từ khóa hạt giống cần mở rộng (ví dụ: 'máy lọc nước')"
+                        "enum": ["list_sessions", "get_unindexed_urls", "get_session_detail"],
+                        "description": "Hành động: 'list_sessions' (liệt kê phiên), 'get_unindexed_urls' (lấy link chưa index), 'get_session_detail' (chi tiết 1 phiên)"
                     },
-                    "location": {
+                    "projectId": {
                         "type": "string",
-                        "description": "Mã hoặc tên quốc gia (mặc định 'VN')"
+                        "description": "ID Guid của dự án SEO"
                     },
-                    "language": {
+                    "targetDomain": {
                         "type": "string",
-                        "description": "Mã hoặc tên ngôn ngữ (mặc định 'vi')"
+                        "description": "Tên miền mục tiêu (ví dụ: solannseo.com)"
                     },
-                    "maxSuggestions": {
+                    "scope": {
                         "type": "integer",
-                        "description": "Số lượng từ khóa tối đa cần lấy (1-100, mặc định 50)"
+                        "description": "Loại link: 0=Standalone, 1=Internal, 2=Backlink, 3=SocialEntity"
                     },
-                    "alphabetSoup": {
-                        "type": "boolean",
-                        "description": "Có chạy chiến thuật vét bảng chữ cái a-j hay không (mặc định true)"
+                    "sessionId": {
+                        "type": "string",
+                        "description": "ID Guid của phiên kiểm tra (khi action='get_session_detail' hoặc 'get_unindexed_urls')"
+                    },
+                    "take": {
+                        "type": "integer",
+                        "description": "Số lượng bản ghi tối đa (mặc định 20, tối đa 100)"
                     }
                 },
-                "required": ["seedKeyword"]
+                "required": ["action"]
             }
         }
     ]
 
+
 def handle_tool_call(tool_name, arguments, config):
-    if tool_name == "google_keyword_research":
-        payload = {}
-        if "targetUrl" in arguments and arguments["targetUrl"]:
-            payload["targetUrl"] = arguments["targetUrl"]
-        if "keywords" in arguments and arguments["keywords"]:
-            payload["keywords"] = arguments["keywords"]
+    if tool_name == "solann_api_request":
+        endpoint = arguments.get("endpoint", "").strip().lstrip("/")
+        if not endpoint:
+            return {"error": "INVALID_ARGUMENT", "message": "endpoint là bắt buộc."}
 
-        payload["locationId"] = arguments.get("location") or config.get("default_location", "VN")
-        payload["languageId"] = arguments.get("language") or config.get("default_language", "vi")
+        method = arguments.get("method", "POST").upper()
+        payload = arguments.get("payload")
+        query_params = arguments.get("queryParams")
 
-        return make_api_request("keyword-research", payload, config)
+        if query_params and isinstance(query_params, dict):
+            query_str = urllib.parse.urlencode({k: v for k, v in query_params.items() if v is not None})
+            if query_str:
+                endpoint = f"{endpoint}?{query_str}"
 
-    elif tool_name == "auto_suggest_and_fetch_volume":
-        seed = arguments.get("seedKeyword")
-        if not seed:
-            return {"error": "INVALID_ARGUMENT", "message": "seedKeyword là bắt buộc."}
+        return make_api_request(endpoint, payload, config, method=method)
 
-        payload = {
-            "seedKeyword": seed,
-            "locationId": arguments.get("location") or config.get("default_location", "VN"),
-            "languageId": arguments.get("language") or config.get("default_language", "vi"),
-            "maxSuggestions": min(arguments.get("maxSuggestions", 50), 100),
-            "alphabetSoup": arguments.get("alphabetSoup", True)
-        }
-        return make_api_request("keyword-suggest", payload, config)
+    elif tool_name == "solann_get_project_data":
+        action = arguments.get("action", "list_sessions")
+
+        if action == "list_sessions":
+            params = []
+            if arguments.get("projectId"):
+                params.append(f"projectId={urllib.parse.quote(str(arguments['projectId']))}")
+            if arguments.get("targetDomain"):
+                params.append(f"targetDomain={urllib.parse.quote(str(arguments['targetDomain']))}")
+            if arguments.get("scope") is not None:
+                params.append(f"scope={arguments['scope']}")
+            take = min(arguments.get("take", 20), 100)
+            params.append(f"take={take}")
+            query_str = "&".join(params)
+            endpoint = f"index-check-sessions{('?' + query_str) if query_str else ''}"
+            return make_api_request(endpoint, None, config, method="GET")
+
+        elif action == "get_unindexed_urls":
+            params = []
+            if arguments.get("projectId"):
+                params.append(f"projectId={urllib.parse.quote(str(arguments['projectId']))}")
+            if arguments.get("targetDomain"):
+                params.append(f"targetDomain={urllib.parse.quote(str(arguments['targetDomain']))}")
+            if arguments.get("scope") is not None:
+                params.append(f"scope={arguments['scope']}")
+            if arguments.get("sessionId"):
+                params.append(f"sessionId={urllib.parse.quote(str(arguments['sessionId']))}")
+            query_str = "&".join(params)
+            endpoint = f"index-check-sessions/unindexed-urls{('?' + query_str) if query_str else ''}"
+            return make_api_request(endpoint, None, config, method="GET")
+
+        elif action == "get_session_detail":
+            sess_id = arguments.get("sessionId")
+            if not sess_id:
+                return {"error": "INVALID_ARGUMENT", "message": "sessionId là bắt buộc đối với action get_session_detail."}
+            return make_api_request(f"index-check-sessions/{sess_id}", None, config, method="GET")
+
+        else:
+            return {"error": "INVALID_ACTION", "message": f"Hành động không hợp lệ: {action}"}
+
+    # Backward compatibility fallbacks
+    elif tool_name in ("google_keyword_research", "keyword_research"):
+        return make_api_request("keyword-research", arguments, config, method="POST")
+
+    elif tool_name in ("auto_suggest_and_fetch_volume", "keyword_suggest"):
+        return make_api_request("keyword-suggest", arguments, config, method="POST")
+
+    elif tool_name == "force_google_index":
+        return make_api_request("force-index", arguments, config, method="POST")
 
     else:
-        return {"error": "TOOL_NOT_FOUND", "message": f"Không tìm thấy tool: {tool_name}"}
+        return {
+            "error": "TOOL_NOT_FOUND",
+            "message": f"Không tìm thấy tool: {tool_name}. Vui lòng sử dụng 'solann_api_request' hoặc kích hoạt Skill 'seo-solann' để chạy script Python qua terminal."
+        }
+
 
 def send_response(response_dict):
     msg = json.dumps(response_dict, ensure_ascii=False)
     sys.stdout.write(msg + "\n")
     sys.stdout.flush()
 
+
 def main():
-    log_debug("Starting seo-solann MCP Stdio server...")
+    log_debug("Starting seo-solann Anti-Tool-Bloat MCP Stdio server...")
     config = load_volume_config()
 
     while True:
@@ -189,54 +254,40 @@ def main():
             except json.JSONDecodeError:
                 continue
 
-            req_id = request.get("id")
+            msg_id = request.get("id")
             method = request.get("method")
-            params = request.get("params", {})
 
             if method == "initialize":
                 send_response({
                     "jsonrpc": "2.0",
-                    "id": req_id,
+                    "id": msg_id,
                     "result": {
                         "protocolVersion": "2024-11-05",
-                        "capabilities": {
-                            "tools": {}
-                        },
+                        "capabilities": {"tools": {}},
                         "serverInfo": {
                             "name": "seo-solann",
-                            "version": "1.0.0"
+                            "version": "2.0.0"
                         }
                     }
-                })
-
-            elif method == "notifications/initialized":
-                # Client initialized confirmation — no response needed for notifications
-                pass
-
-            elif method == "ping":
-                send_response({
-                    "jsonrpc": "2.0",
-                    "id": req_id,
-                    "result": {}
                 })
 
             elif method == "tools/list":
                 send_response({
                     "jsonrpc": "2.0",
-                    "id": req_id,
-                    "result": {
-                        "tools": get_tools_definition()
-                    }
+                    "id": msg_id,
+                    "result": {"tools": get_tools_definition()}
                 })
 
             elif method == "tools/call":
+                params = request.get("params", {})
                 tool_name = params.get("name")
                 arguments = params.get("arguments", {})
+
                 result_data = handle_tool_call(tool_name, arguments, config)
 
                 send_response({
                     "jsonrpc": "2.0",
-                    "id": req_id,
+                    "id": msg_id,
                     "result": {
                         "content": [
                             {
@@ -247,21 +298,23 @@ def main():
                     }
                 })
 
+            elif method == "notifications/initialized":
+                pass
+
             else:
-                if req_id is not None:
+                if msg_id is not None:
                     send_response({
                         "jsonrpc": "2.0",
-                        "id": req_id,
+                        "id": msg_id,
                         "error": {
                             "code": -32601,
                             "message": f"Method not found: {method}"
                         }
                     })
 
-        except (KeyboardInterrupt, SystemExit):
-            break
         except Exception as e:
-            log_debug(f"Unhandled loop error: {e}")
+            log_debug(f"Unhandled exception in MCP loop: {e}")
+
 
 if __name__ == "__main__":
     main()

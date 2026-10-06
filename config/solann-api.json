@@ -2,5 +2,6 @@
   "base_url": "https://api.solann.io/api/v1",
   "default_language": "vi",
   "default_location": "VN",
-  "api_key": "sk-solanneco-test-key"
+  "api_key": "YOUR_API_KEY_HERE",
+  "serper_api_key": "f3ab2e45370755c9636564399369b289b4daa27a"
 }
